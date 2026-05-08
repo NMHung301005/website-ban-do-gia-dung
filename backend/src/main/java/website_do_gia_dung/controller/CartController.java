@@ -8,6 +8,7 @@ import website_do_gia_dung.service.CartService;
 
 @RestController
 @RequestMapping("/api/v1/cart")
+@CrossOrigin("*")
 @RequiredArgsConstructor
 public class CartController {
 

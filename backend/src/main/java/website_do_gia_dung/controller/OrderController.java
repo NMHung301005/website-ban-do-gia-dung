@@ -9,6 +9,7 @@ import website_do_gia_dung.service.OrderService;
 
 @RestController
 @RequestMapping("/api/v1/orders")
+@CrossOrigin("*")
 @RequiredArgsConstructor
 public class OrderController {
 

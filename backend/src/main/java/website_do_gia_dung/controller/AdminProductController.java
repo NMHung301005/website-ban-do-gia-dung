@@ -8,6 +8,7 @@ import website_do_gia_dung.service.ProductService;
 
 @RestController
 @RequestMapping("/api/v1/admin/products")
+@CrossOrigin("*")
 @RequiredArgsConstructor
 public class AdminProductController {
 

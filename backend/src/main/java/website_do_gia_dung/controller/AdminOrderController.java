@@ -10,6 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/admin/orders")
+@CrossOrigin("*")
 @RequiredArgsConstructor
 public class AdminOrderController {
 

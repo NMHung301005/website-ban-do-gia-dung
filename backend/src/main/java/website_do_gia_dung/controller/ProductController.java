@@ -4,11 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import website_do_gia_dung.entity.Product;
 import website_do_gia_dung.service.ProductService;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/products")
+@CrossOrigin("*")
 @RequiredArgsConstructor
 public class ProductController {
 

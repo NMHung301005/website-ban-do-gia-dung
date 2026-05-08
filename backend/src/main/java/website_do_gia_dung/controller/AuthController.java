@@ -7,12 +7,14 @@ import website_do_gia_dung.dto.RegisterRequest;
 import website_do_gia_dung.entity.User;
 import website_do_gia_dung.security.JwtService;
 import website_do_gia_dung.service.AuthService;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/auth")
+@CrossOrigin("*")
 @RequiredArgsConstructor
 public class AuthController {
 

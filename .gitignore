@@ -1,0 +1,24 @@
+# Java/Maven (Bỏ qua các file biên dịch)
+backend/target/
+*.class
+*.jar
+*.war
+
+# IDE (Bỏ qua cấu hình riêng của IntelliJ/VS Code)
+.idea/
+*.iml
+.vscode/
+.project
+.classpath
+.settings/
+
+# Frontend (Bỏ qua thư viện cực nặng)
+node_modules/
+Frontend/node_modules/
+Frontend/dist/
+Frontend/build/
+
+# Hệ điều hành & Khác
+.DS_Store
+Thumbs.db
+backend/target/classes/.DS_Store
