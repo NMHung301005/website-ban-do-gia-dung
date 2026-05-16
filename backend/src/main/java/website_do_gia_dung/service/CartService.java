@@ -11,6 +11,8 @@ import website_do_gia_dung.repository.CartRepository;
 import website_do_gia_dung.repository.ProductRepository;
 import website_do_gia_dung.repository.UserRepository;
 
+import java.util.ArrayList;
+
 @Service
 @RequiredArgsConstructor
 public class CartService {
@@ -20,25 +22,30 @@ public class CartService {
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
 
-    // 🛒 Lấy giỏ hàng của user
     public Cart getCart(String email) {
-        User user = userRepository.findByEmail(email).orElseThrow();
-
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy user: " + email));
         Cart cart = cartRepository.findByUser(user);
 
         if (cart == null) {
-            cart = Cart.builder().user(user).build();
+            cart = Cart.builder()
+                    .user(user)
+                    .items(new ArrayList<>())
+                    .build();
             cartRepository.save(cart);
+        }
+
+        if (cart.getItems() == null) {
+            cart.setItems(new ArrayList<>());
         }
 
         return cart;
     }
 
-    // ➕ Thêm vào giỏ
     public Cart addToCart(String email, Long productId) {
-
         Cart cart = getCart(email);
-        Product product = productRepository.findById(productId).orElseThrow();
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm id=" + productId));
 
         for (CartItem item : cart.getItems()) {
             if (item.getProduct().getId().equals(productId)) {
@@ -57,34 +64,39 @@ public class CartService {
         return cartRepository.save(cart);
     }
 
-    // ❌ Xóa item
-    public void removeItem(Long itemId) {
-        cartItemRepository.deleteById(itemId);
-    }
-    // 🔄 Cập nhật số lượng
-    public Cart updateQuantity(String email, Long itemId, int quantity) {
-
-        User user = userRepository.findByEmail(email).orElseThrow();
-        Cart cart = cartRepository.findByUser(user);
-
+    // FIX: kiểm tra quyền sở hữu trước khi xóa
+    public Cart removeItem(String email, Long itemId) {
+        Cart cart = getCart(email);
         CartItem item = cartItemRepository.findById(itemId)
-                .orElseThrow();
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy item id=" + itemId));
 
-        // ✅ Check item thuộc cart này
         if (!item.getCart().getId().equals(cart.getId())) {
-            throw new RuntimeException("Không có quyền");
+            throw new RuntimeException("Bạn không có quyền xóa item này");
         }
 
-        if (quantity == 0) {
+        cartItemRepository.delete(item);
+        return getCart(email);
+    }
+
+    public Cart updateQuantity(String email, Long itemId, int quantity) {
+        Cart cart = getCart(email);
+        CartItem item = cartItemRepository.findById(itemId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy item id=" + itemId));
+
+        if (!item.getCart().getId().equals(cart.getId())) {
+            throw new RuntimeException("Không có quyền chỉnh sửa item này");
+        }
+
+        if (quantity <= 0) {
             cartItemRepository.delete(item);
             return getCart(email);
         }
 
         item.setQuantity(quantity);
         cartItemRepository.save(item);
-
         return getCart(email);
     }
+
     public double getTotal(Cart cart) {
         return cart.getItems().stream()
                 .mapToDouble(i -> i.getProduct().getPrice() * i.getQuantity())

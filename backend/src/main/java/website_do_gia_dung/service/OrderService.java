@@ -1,8 +1,8 @@
 package website_do_gia_dung.service;
 
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import website_do_gia_dung.entity.*;
 import website_do_gia_dung.repository.CartRepository;
 import website_do_gia_dung.repository.OrderRepository;
@@ -10,6 +10,7 @@ import website_do_gia_dung.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -19,19 +20,17 @@ public class OrderService {
     private final UserRepository userRepository;
     private final OrderRepository orderRepository;
 
+    @Transactional
     public Order checkout(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy user: " + email));
 
-        // 1. Lấy user
-        User user = userRepository.findByEmail(email).orElseThrow();
-
-        // 2. Lấy cart
         Cart cart = cartRepository.findByUser(user);
 
         if (cart == null || cart.getItems().isEmpty()) {
-            throw new RuntimeException("Giỏ hàng trống");
+            throw new RuntimeException("Giỏ hàng trống, không thể đặt hàng");
         }
 
-        // 3. Tạo order
         Order order = Order.builder()
                 .user(user)
                 .status("PENDING")
@@ -41,14 +40,12 @@ public class OrderService {
 
         double total = 0;
 
-        // 4. Copy item
         for (CartItem cartItem : cart.getItems()) {
-
             OrderItem orderItem = OrderItem.builder()
                     .order(order)
                     .product(cartItem.getProduct())
                     .quantity(cartItem.getQuantity())
-                    .price(cartItem.getProduct().getPrice())
+                    .price(cartItem.getProduct().getPrice()) // lưu giá tại thời điểm mua
                     .build();
 
             total += orderItem.getPrice() * orderItem.getQuantity();
@@ -56,14 +53,18 @@ public class OrderService {
         }
 
         order.setTotalPrice(total);
-
-        // 5. Lưu order
         Order savedOrder = orderRepository.save(order);
 
-        // 6. Xóa cart
+        // Xóa giỏ hàng sau khi đặt thành công
         cart.getItems().clear();
         cartRepository.save(cart);
 
         return savedOrder;
+    }
+
+    public List<Order> getOrdersByUser(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy user: " + email));
+        return orderRepository.findByUserOrderByCreatedAtDesc(user);
     }
 }

@@ -1,49 +1,43 @@
 package website_do_gia_dung.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import website_do_gia_dung.entity.Cart;
-import website_do_gia_dung.security.JwtService;
 import website_do_gia_dung.service.CartService;
 
 @RestController
 @RequestMapping("/api/v1/cart")
-@CrossOrigin("*")
 @RequiredArgsConstructor
 public class CartController {
 
     private final CartService cartService;
-    private final JwtService jwtService;
 
     // 🛒 Xem giỏ hàng
     @GetMapping
-    public Cart getCart(@RequestHeader("Authorization") String token) {
-        String email = jwtService.extractEmail(token.substring(7));
-        return cartService.getCart(email);
+    public Cart getCart(Authentication authentication) {
+        return cartService.getCart(authentication.getName());
     }
 
     // ➕ Thêm sản phẩm
     @PostMapping("/add/{productId}")
-    public Cart addToCart(@RequestHeader("Authorization") String token,
-                          @PathVariable Long productId) {
-
-        String email = jwtService.extractEmail(token.substring(7));
-        return cartService.addToCart(email, productId);
+    public Cart addToCart(@PathVariable Long productId,
+                          Authentication authentication) {
+        return cartService.addToCart(authentication.getName(), productId);
     }
 
-    // ❌ Xóa item
+    // ❌ Xóa item — có kiểm tra quyền sở hữu
     @DeleteMapping("/{itemId}")
-    public void removeItem(@PathVariable Long itemId) {
-        cartService.removeItem(itemId);
+    public Cart removeItem(@PathVariable Long itemId,
+                           Authentication authentication) {
+        return cartService.removeItem(authentication.getName(), itemId);
     }
+
     // 🔄 Update quantity
     @PutMapping("/update/{itemId}")
-    public Cart updateQuantity(
-            @RequestHeader("Authorization") String token,
-            @PathVariable Long itemId,
-            @RequestParam int quantity) {
-
-        String email = jwtService.extractEmail(token.substring(7));
-        return cartService.updateQuantity(email, itemId, quantity);
+    public Cart updateQuantity(@PathVariable Long itemId,
+                               @RequestParam int quantity,
+                               Authentication authentication) {
+        return cartService.updateQuantity(authentication.getName(), itemId, quantity);
     }
 }

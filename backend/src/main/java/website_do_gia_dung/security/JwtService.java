@@ -10,31 +10,33 @@ import java.util.Date;
 @Service
 public class JwtService {
 
-    private final Key SECRET_KEY = Keys.hmacShaKeyFor("mysecretkey123mysecretkey123mysecretkey123".getBytes());
+    private final Key SECRET_KEY = Keys.hmacShaKeyFor(
+            "mysecretkey123mysecretkey123mysecretkey123".getBytes()
+    );
 
     public String generateToken(String email, String role) {
         return Jwts.builder()
                 .setSubject(email)
                 .claim("role", role)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 8)) // 8 giờ
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();
     }
 
     public String extractEmail(String token) {
+        return getClaims(token).getSubject();
+    }
+
+    public String extractRole(String token) {
+        return getClaims(token).get("role", String.class);
+    }
+
+    private Claims getClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(SECRET_KEY)
                 .build()
                 .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
-    }
-    public String extractRole(String token) {
-        return Jwts.parser()
-                .setSigningKey(SECRET_KEY)
-                .parseClaimsJws(token)
-                .getBody()
-                .get("role", String.class);
+                .getBody();
     }
 }

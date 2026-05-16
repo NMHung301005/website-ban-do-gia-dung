@@ -1,6 +1,6 @@
 package website_do_gia_dung.entity;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,7 +17,7 @@ public class OrderItem {
     private Long id;
 
     @ManyToOne
-    @JsonManagedReference
+    @JsonBackReference
     private Order order;
 
     @ManyToOne
@@ -25,5 +25,6 @@ public class OrderItem {
 
     private int quantity;
 
-    private double price; // giá tại thời điểm mua
+    private double price;
 }
+ 
