@@ -1,96 +1,90 @@
-import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useState } from 'react'; 
 
 const Header = () => {
-  const [keyword, setKeyword] = useState('');
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
+  const userEmail = localStorage.getItem('userEmail');
+  const [keyword, setKeyword] = useState(''); // State lưu từ khóa gõ vào ô tìm kiếm
 
-  // Kiểm tra trạng thái đăng nhập
-  useEffect(() => {
-    const token = localStorage.getItem('accessToken');
-    if (token) {
-      setIsLoggedIn(true);
-    }
-  }, []);
-
-  const handleSearch = () => {
-    if (keyword.trim() !== '') {
-      navigate(`/products?search=${keyword}`);
-    }
-  };
-
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      handleSearch();
+  // Hàm kích hoạt khi người dùng nhấn nút Tìm kiếm hoặc Enter
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (keyword.trim()) {
+      // Chuyển hướng sang trang danh sách sản phẩm kèm query parameter ?name=...
+      navigate(`/products?name=${encodeURIComponent(keyword.trim())}`);
+    } else {
+      navigate('/products'); // Nếu ô trống thì về trang tất cả sản phẩm
     }
   };
 
   const handleLogout = () => {
     localStorage.removeItem('accessToken');
-    setIsLoggedIn(false);
+    localStorage.removeItem('userEmail');
     navigate('/login');
+    window.location.reload();
   };
 
   return (
-    <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 20px', borderBottom: '1px solid #eaeaea', backgroundColor: '#fff' }}>
-      {/* Logo */}
-      <div className="logo">
-        <Link to="/" style={{ fontSize: '24px', fontWeight: 'bold', color: '#0056b3', textDecoration: 'none' }}>
-          🏠 HomeMart
-        </Link>
-      </div>
-
-      {/* Thanh tìm kiếm */}
-      <div className="search-bar" style={{ display: 'flex', width: '500px' }}>
-        <input 
-          type="text" 
-          placeholder="Tìm kiếm sản phẩm... (VD: quạt điện)" 
-          value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
-          onKeyDown={handleKeyDown}
-          style={{ width: '100%', padding: '10px', border: '1px solid #ccc', borderRadius: '4px 0 0 4px', outline: 'none' }} 
-        />
-        <button 
-          onClick={handleSearch}
-          style={{ padding: '10px 20px', backgroundColor: '#0056b3', color: '#fff', border: 'none', borderRadius: '0 4px 4px 0', cursor: 'pointer' }}
-        >
-          🔍
-        </button>
-      </div>
-
-      {/* Cụm chức năng */}
-      <div className="user-actions" style={{ display: 'flex', gap: '25px', alignItems: 'center' }}>
+    <header style={{ backgroundColor: '#0084ff', color: 'white', padding: '15px 0', boxShadow: '0 2px 10px rgba(0,0,0,0.1)', position: 'sticky', top: 0, zIndex: 1000 }}>
+      <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         
-        {isLoggedIn ? (
-          <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
-            {/* ĐÃ BỌC: Nhấn vào icon user hoặc chữ Tài khoản sẽ sang trang Account */}
-            <Link to="/account" style={{ textAlign: 'center', cursor: 'pointer', textDecoration: 'none', color: 'inherit' }}>
-              <span style={{ fontSize: '20px' }}>👤</span>
-              <div style={{ fontSize: '12px', marginTop: '4px' }}>Tài khoản</div>
-            </Link>
-
-            <div onClick={handleLogout} style={{ textAlign: 'center', cursor: 'pointer', color: '#d0021b' }}>
-              <span style={{ fontSize: '20px' }}>🚪</span>
-              <div style={{ fontSize: '12px', marginTop: '4px' }}>Đăng xuất</div>
-            </div>
+        {/* Logo HomeMart */}
+        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ backgroundColor: 'white', color: '#0084ff', width: '40px', height: '40px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', fontWeight: '900' }}>
+            H
           </div>
-        ) : (
-          <Link to="/login" style={{ textAlign: 'center', cursor: 'pointer', textDecoration: 'none', color: 'inherit' }}>
-            <span style={{ fontSize: '20px' }}>👤</span>
-            <div style={{ fontSize: '12px', marginTop: '4px' }}>Đăng nhập</div>
-          </Link>
-        )}
-        
-        <div style={{ textAlign: 'center', cursor: 'pointer' }}>
-          <span style={{ fontSize: '20px' }}>❤️</span>
-          <div style={{ fontSize: '12px', marginTop: '4px' }}>Yêu thích</div>
-        </div>
-        
-        <Link to="/cart" style={{ textAlign: 'center', cursor: 'pointer', textDecoration: 'none', color: 'inherit' }}>
-          <span style={{ fontSize: '20px' }}>🛒</span>
-          <div style={{ fontSize: '12px', marginTop: '4px' }}>Giỏ hàng</div>
+          <span style={{ fontSize: '24px', fontWeight: '800', letterSpacing: '1px' }}>HOMEMART</span>
         </Link>
+
+        {/* Thanh tìm kiếm trung tâm - ĐÃ SỬA THÀNH THẺ FORM ĐỂ CHẠY ĐỘNG */}
+        <form onSubmit={handleSearch} style={{ flex: '0 1 500px', display: 'flex', position: 'relative' }}>
+          <input 
+            type="text" 
+            placeholder="Tìm kiếm sản phẩm (VD: Quạt điện thông minh...)" 
+            value={keyword} // Gắn state keyword vào đây
+            onChange={(e) => setKeyword(e.target.value)} // Cập nhật state khi người dùng gõ chữ
+            style={{ width: '100%', padding: '12px 20px', borderRadius: '50px', border: 'none', outline: 'none', fontSize: '14px', boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.1)', color: '#333' }}
+          />
+          {/* Thêm type="submit" để khi bấm vào nút hoặc nhấn Enter trong ô input thì form tự kích hoạt tìm kiếm */}
+          <button type="submit" style={{ position: 'absolute', right: '5px', top: '5px', bottom: '5px', width: '40px', borderRadius: '50%', backgroundColor: '#0084ff', color: 'white', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+            <i className="fas fa-search"></i>
+          </button>
+        </form>
+
+        {/* Cụm chức năng (Icons) */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '25px', fontSize: '14px', fontWeight: '500' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <i className="fas fa-phone-volume" style={{ fontSize: '20px' }}></i>
+            <span>1900 13 57 99</span>
+          </div>
+
+          <div style={{ width: '1px', height: '30px', backgroundColor: 'rgba(255,255,255,0.3)' }}></div>
+
+          {userEmail ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+              <Link to="/orders" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+                <i className="far fa-user-circle" style={{ fontSize: '20px' }}></i>
+                <span style={{ fontSize: '12px' }}>{userEmail.split('@')[0]}</span>
+              </Link>
+              <button onClick={handleLogout} style={{ background: 'none', border: 'none', color: 'white', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>
+                <i className="fas fa-sign-out-alt" style={{ fontSize: '20px' }}></i>
+                <span style={{ fontSize: '12px' }}>Đăng xuất</span>
+              </button>
+            </div>
+          ) : (
+            <Link to="/login" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+              <i className="far fa-user-circle" style={{ fontSize: '20px' }}></i>
+              <span style={{ fontSize: '12px' }}>Đăng nhập</span>
+            </Link>
+          )}
+
+          <Link to="/cart" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', position: 'relative' }}>
+            <i className="fas fa-shopping-cart" style={{ fontSize: '20px' }}></i>
+            <span style={{ fontSize: '12px' }}>Giỏ hàng</span>
+            <span style={{ position: 'absolute', top: '-5px', right: '5px', width: '10px', height: '10px', backgroundColor: '#ff3b30', borderRadius: '50%' }}></span>
+          </Link>
+        </div>
+
       </div>
     </header>
   );

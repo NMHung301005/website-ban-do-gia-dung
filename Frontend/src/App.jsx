@@ -6,9 +6,11 @@ import ProductDetail from './pages/ProductDetail';
 import Cart from './pages/Cart';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import Account from './pages/Account'; // <-- Import trang mới
+import Account from './pages/Account'; 
 import AdminDashboard from './pages/AdminDashboard';
-import ProductForm from './pages/ProductForm';
+import OrderHistory from './pages/OrderHistory';
+import ProductForm from './pages/ProductForm'; 
+import AdminOrders from './pages/AdminOrders';
 
 function App() {
   return (
@@ -21,10 +23,13 @@ function App() {
           <Route path="cart" element={<Cart />} />
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
-          <Route path="account" element={<Account />} /> {/* <-- Thêm Route */}
+          <Route path="account" element={<Account />} />
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/product/add" element={<ProductForm />} />
           <Route path="/admin/product/edit/:id" element={<ProductForm />} />
+          <Route path="/orders" element={<OrderHistory />} />
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/orders" element={<AdminOrders />} />
         </Route>
       </Routes>
     </Router>

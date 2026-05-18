@@ -1,95 +1,69 @@
+// src/pages/ProductDetail.jsx
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import productService from '../services/productService';
 import cartService from '../services/cartService';
 
 const ProductDetail = () => {
   const { id } = useParams();
-  const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [quantity, setQuantity] = useState(1); // Biến để lưu số lượng người dùng chọn
 
   useEffect(() => {
-    const fetchProductDetail = async () => {
-      try {
-        const data = await productService.getById(id);
+    productService.getById(id)
+      .then(data => {
         setProduct(data);
-      } catch (err) {
-        console.error(err);
-      } finally {
         setLoading(false);
-      }
-    };
-    fetchProductDetail();
+      })
+      .catch(() => setLoading(false));
   }, [id]);
 
-  // Hàm xử lý Thêm vào giỏ hàng
   const handleAddToCart = async () => {
-    const token = localStorage.getItem('accessToken');
-    if (!token) {
-      alert("Bạn cần đăng nhập để mua hàng!");
-      navigate('/login');
-      return;
-    }
-
     try {
-      // Gọi API POST /api/v1/cart/add/{productId}
-      await cartService.add(product.id);
-      alert("Đã thêm sản phẩm vào giỏ hàng!");
+      await cartService.add(product.id, quantity); // Chú ý: bạn có thể cần sửa cartService để nhận thêm quantity
+      alert('Đã thêm sản phẩm vào giỏ hàng!');
     } catch (error) {
-      console.error(error);
-      alert("Thêm vào giỏ hàng thất bại. Vui lòng thử lại.");
+      alert('Vui lòng đăng nhập để thêm vào giỏ hàng.');
     }
   };
 
-  // Hàm xử lý Mua ngay (Thêm vào giỏ rồi chuyển thẳng sang trang Cart)
-  const handleBuyNow = async () => {
-    const token = localStorage.getItem('accessToken');
-    if (!token) {
-      alert("Bạn cần đăng nhập để mua hàng!");
-      navigate('/login');
-      return;
-    }
-
-    try {
-      await cartService.add(product.id);
-      navigate('/cart'); // Chuyển sang trang giỏ hàng
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  if (loading) return <div style={{ padding: '40px' }}>Đang tải...</div>;
-  if (!product) return <div style={{ padding: '40px' }}>Không tìm thấy sản phẩm.</div>;
-
-  const formattedPrice = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.price || 0);
-  const productImage = product.image || product.imageUrl || 'https://via.placeholder.com/400x400?text=Chua+Co+Anh';
+  if (loading) return <div style={{ padding: '100px', textAlign: 'center', color: '#666' }}>Đang kết nối sản phẩm thông minh...</div>;
+  if (!product) return <div style={{ padding: '100px', textAlign: 'center' }}>Không tìm thấy sản phẩm.</div>;
 
   return (
-    <div style={{ display: 'flex', gap: '40px', padding: '20px', maxWidth: '1000px', margin: '0 auto' }}>
-      <div style={{ flex: '1' }}>
-        <img src={productImage} alt={product.name} style={{ width: '100%', borderRadius: '8px', border: '1px solid #eaeaea' }} />
-      </div>
-      
-      <div style={{ flex: '1.5', display: 'flex', flexDirection: 'column' }}>
-        <h1 style={{ fontSize: '26px', marginBottom: '15px' }}>{product.name}</h1>
-        <div style={{ backgroundColor: '#fafafa', padding: '15px', borderRadius: '4px', marginBottom: '20px' }}>
-          <p style={{ color: '#d0021b', fontSize: '32px', fontWeight: 'bold', margin: '0' }}>{formattedPrice}</p>
-        </div>
-
-        <div style={{ marginBottom: '30px' }}>
-          <h3 style={{ fontSize: '18px', marginBottom: '10px' }}>Đặc điểm nổi bật</h3>
-          <p style={{ lineHeight: '1.6' }}>{product.description || 'Chưa có mô tả chi tiết.'}</p>
-        </div>
+    <div style={{ backgroundColor: '#fff', padding: '80px 0' }}>
+      <div className="container">
+        {/* Breadcrumb sang trọng */}
+        <div style={{ fontSize: '13px', color: '#777', marginBottom: '40px' }}>Trang chủ / Sản phẩm / {product.name}</div>
         
-        {/* Đã gắn sự kiện onClick cho 2 nút bấm */}
-        <div style={{ display: 'flex', gap: '15px', marginTop: 'auto' }}>
-          <button onClick={handleAddToCart} style={{ flex: 1, padding: '15px', backgroundColor: '#fff', color: '#0056b3', border: '1px solid #0056b3', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
-            Thêm vào giỏ hàng
-          </button>
-          <button onClick={handleBuyNow} style={{ flex: 1, padding: '15px', backgroundColor: '#0056b3', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
-            Mua ngay
-          </button>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '50px', alignItems: 'start' }}>
+          {/* Cột 1: Ảnh sản phẩm */}
+          <div style={{ border: '1px solid #eee', borderRadius: '16px', padding: '40px' }}>
+            <img src={product.imageUrl || 'https://via.placeholder.com/600x600.png'} alt={product.name} style={{ width: '100%', height: 'auto', objectFit: 'contain' }} />
+          </div>
+          
+          {/* Cột 2: Thông tin chi tiết và Mua hàng */}
+          <div>
+            <h1 style={{ fontSize: '32px', fontWeight: '700', marginBottom: '15px' }}>{product.name}</h1>
+            <p style={{ fontSize: '14px', color: '#777', marginBottom: '30px' }}>Mã sản phẩm (SKU): HM{product.id}</p>
+            <div className="product-price" style={{ fontSize: '36px', marginBottom: '30px' }}>{product.price.toLocaleString('vi-VN')} đ</div>
+            
+            <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '40px' }}>
+              <p style={{ margin: 0, fontWeight: '500' }}>Số lượng:</p>
+              {/* --- BỘ TĂNG GIẢM SỐ LƯỢNG TRƯỚC KHI THÊM --- */}
+              <div className="quantity-control">
+                <button onClick={() => quantity > 1 && setQuantity(quantity - 1)}>-</button>
+                <span>{quantity}</span>
+                <button onClick={() => setQuantity(quantity + 1)}>+</button>
+              </div>
+            </div>
+            
+            <div style={{ display: 'flex', gap: '15px' }}>
+              <button className="btn-primary" style={{ padding: '15px 40px', backgroundColor: '#d32f2f' }}>MUA NGAY</button>
+              <button onClick={handleAddToCart} className="btn-primary" style={{ padding: '15px 30px' }}>THÊM VÀO GIỎ HÀNG</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

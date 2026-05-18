@@ -1,9 +1,14 @@
 import axiosClient from '../api/axiosClient';
 
 const orderService = {
-  checkout: (orderData) => {
-    // orderData chứa thông tin giao hàng, SĐT, v.v.
-    return axiosClient.post('/api/v1/orders/checkout', orderData);
+  // Hàm 1: Gọi API để tiến hành thanh toán (Checkout)
+  checkout: () => {
+    return axiosClient.post('/orders/checkout');
+  },
+  
+  // Hàm 2: Gọi API lấy lịch sử đơn hàng của User đang đăng nhập
+  getMyOrders: () => {
+    return axiosClient.get('/orders');
   }
 };
 

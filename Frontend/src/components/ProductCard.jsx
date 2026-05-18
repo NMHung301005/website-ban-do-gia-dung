@@ -6,7 +6,7 @@ const ProductCard = ({ product }) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price || 0);
   };
 
-  // Xử lý ảnh: Nếu database trống (null/empty) thì dùng ảnh placeholder chuyên nghiệp
+  // Xử lý ảnh: Nếu database trống (null/empty) thì dùng ảnh placeholder
   const productImage = (product.image && product.image.trim() !== '') 
     ? product.image 
     : 'https://placehold.co/400x400/e6f0ff/0056b3?text=HomeMart';

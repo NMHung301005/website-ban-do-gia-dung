@@ -1,22 +1,24 @@
 import axiosClient from '../api/axiosClient';
 
 const productService = {
-  // 1. Lấy toàn bộ danh sách sản phẩm từ database
-  // Tương ứng GET /api/v1/products
   getAll: () => {
-    return axiosClient.get('/api/v1/products');
+    return axiosClient.get('/products');
   },
-
-  // 2. Lấy thông tin chi tiết của một sản phẩm cụ thể theo ID
-  // Tương ứng GET /api/v1/products/{id}
+  
   getById: (id) => {
-    return axiosClient.get(`/api/v1/products/${id}`);
+    return axiosClient.get(`/products/${id}`);
   },
 
-  // 3. Tìm kiếm sản phẩm theo tên (dùng cho thanh Search ở Header)
-  // Tương ứng GET /api/v1/products/search?name={name}
-  searchByName: (name) => {
-    return axiosClient.get(`/api/v1/products/search?name=${name}`);
+  // --- HÀM MỚI: TÌM KIẾM & LỌC SẢN PHẨM PHÂN TRANG ---
+  searchProducts: (name, minPrice, maxPrice, page = 0, size = 6) => {
+    const params = new URLSearchParams();
+    if (name) params.set('name', name);       // Khớp với API backend
+    if (minPrice) params.set('minPrice', minPrice);
+    if (maxPrice) params.set('maxPrice', maxPrice);
+    params.set('page', page);
+    params.set('size', size);
+
+    return axiosClient.get(`/products/search?${params.toString()}`); //
   }
 };
 

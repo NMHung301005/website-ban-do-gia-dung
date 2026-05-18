@@ -17,10 +17,10 @@ const ProductForm = () => {
     e.preventDefault();
     try {
       if (id) {
-        // Gọi API cập nhật (cần có hàm update trong service)
+        // Gọi API cập nhật 
         alert("Cập nhật thành công!");
       } else {
-        // Gọi API thêm mới (cần có hàm add trong service)
+        // Gọi API thêm mới 
         alert("Thêm mới thành công!");
       }
       navigate('/admin');

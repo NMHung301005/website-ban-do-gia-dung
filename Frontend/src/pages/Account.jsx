@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import orderService from '../services/orderService'; // Cần file service này!
+import orderService from '../services/orderService'; 
 
 const Account = () => {
   const [orders, setOrders] = useState([]);
@@ -10,7 +10,7 @@ const Account = () => {
     const fetchMyOrders = async () => {
       try {
         setLoading(true);
-        // Gọi API lấy đơn hàng (Cần nhắc backend API này trả về đơn hàng theo TOKEN gửi sang)
+        // Gọi API lấy đơn hàng 
         const response = await orderService.checkout(); // Tạm dùng service order hiện có, hoặc tạo orderService.getMyOrders()
         // Giả sử API trả về mảng, ta gom lại
         setOrders(Array.isArray(response) ? response : []); 

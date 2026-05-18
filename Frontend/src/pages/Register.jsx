@@ -4,7 +4,7 @@ import authService from '../services/authService';
 
 const Register = () => {
   const navigate = useNavigate();
-  // Đã sửa state: thay fullName bằng email cho khớp với Backend
+  
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -29,7 +29,7 @@ const Register = () => {
       navigate('/login'); // Chuyển sang trang đăng nhập
     } catch (err) {
       console.error(err);
-      // Bạn có thể mở F12 xem console để biết lỗi chính xác nếu vẫn còn
+  
       setError('Đăng ký thất bại. Vui lòng kiểm tra lại thông tin.');
     } finally {
       setLoading(false);
@@ -43,7 +43,7 @@ const Register = () => {
       {error && <div style={{ color: 'red', marginBottom: '15px', textAlign: 'center', fontSize: '14px' }}>{error}</div>}
 
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-        {/* Đã sửa ô input này thành Nhập Email */}
+        {/*  */}
         <input 
           type="text" name="username" placeholder="Tên đăng nhập" required
           value={formData.username} onChange={handleChange}

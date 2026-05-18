@@ -1,9 +1,147 @@
-body {
+/* src/index.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* Định nghĩa các biến màu sắc và Shadow chuẩn E-commerce */
+:root {
+  --primary: #007bff; /* Xanh primary */
+  --text-dark: #333; /* Màu chữ chính */
+  --text-gray: #666; /* Màu chữ phụ */
+  --border: #eaeaea; /* Màu viền */
+  --bg-light: #f9f9f9; /* Màu nền phụ */
+  --red-price: #d9534f; /* Màu đỏ cho giá tiền */
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+  --shadow-md: 0 10px 30px rgba(0,0,0,0.08);
+  --transition: all 0.3s ease;
+}
+
+/* Reset lại CSS để trang web sạch bong */
+* {
+  box-sizing: border-box;
   margin: 0;
-  font-family: Arial, Helvetica, sans-serif;
-  background: #f3f4f6;
+  padding: 0;
+}
+
+body {
+  font-family: 'Poppins', sans-serif; /* Đổi Font Poppins ở đây */
+  background-color: #fff;
+  color: var(--text-dark);
+  line-height: 1.6;
 }
 
 a {
   text-decoration: none;
+  color: inherit;
+  transition: var(--transition);
+}
+
+button {
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+input {
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Các Class tiện ích (Utility Classes) */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.product-price {
+  color: var(--red-price);
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.btn-primary {
+  padding: 12px 25px;
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 50px; /* Nút bo tròn kiểu Tapuho */
+  font-weight: 600;
+  transition: var(--transition);
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+  box-shadow: 0 4px 15px rgba(0,123,255,0.3);
+}
+
+/* --- PRODUCT CARD STYLE (Giống hệt image_27162d.jpg) --- */
+.product-card {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #fff;
+  transition: var(--transition);
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-md);
+}
+
+.product-card-info {
+  padding: 20px;
+}
+
+.product-card-name {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
+.product-card-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
+}
+
+/* --- CART TABLE STYLE (Giống hệt image_27164b.jpg) --- */
+.cart-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.cart-table th, .cart-table td {
+  border-bottom: 1px solid var(--border);
+  padding: 15px 10px;
+  text-align: left;
+}
+
+.cart-table th {
+  font-weight: 600;
+  color: var(--text-gray);
+  font-size: 14px;
+}
+
+/* Bộ tăng giảm số lượng (+/-) */
+.quantity-control {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  width: fit-content;
+  overflow: hidden;
+}
+
+.quantity-control button {
+  padding: 4px 12px;
+  background-color: #fff;
+  border: none;
+  font-size: 16px;
+}
+
+.quantity-control span {
+  padding: 4px 15px;
+  font-weight: 600;
+  border-left: 1px solid var(--border);
+  border-right: 1px solid var(--border);
 }
